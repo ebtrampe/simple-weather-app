@@ -11,13 +11,10 @@ exports.getCoordinates = async (req, res, next) => {
     }
     try {
         const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${req.query.address}.json?access_token=${mapbox_access_key}&limit=1`;
-        const data = await rp({url, json:true});
-        // console.log(JSON.stringify(data.features, null, 2));
-        // console.log(JSON.stringify(data.features[0].place_name, null, 2));
+        const data = await rp({ url, json: true });
         req.latitude = data.features[0].center[1];
         req.longitude = data.features[0].center[0];
         req.location = data.features[0].place_name;
-        // console.log(req);
         next();
     } catch (e) {
         console.log(e);
@@ -25,15 +22,14 @@ exports.getCoordinates = async (req, res, next) => {
             error: 'Address not found. Please try again.'
         });
     }
-}
+};
 
 exports.getForecast = async (req, res, next) => {
     try {
-        const url = `https://api.darksky.net/forecast/${darksky_access_key}/${req.latitude},${req.longitude}`
-        const body = await rp({url, json:true});
-        // console.log(req);
+        const url = `https://api.darksky.net/forecast/${darksky_access_key}/${req.latitude},${req.longitude}`;
+        const body = await rp({ url, json: true });
         res.send({
-            forecast: `${body.daily.data[0].summary} It is currently ${body.currently.temperature} out. There is a ${body.currently.precipProbability}% chance of rain.`,
+            forecast: `${body.daily.data[0].summary} It is currently ${body.currently.temperature} degrees out. There is a ${body.currently.precipProbability}% chance of rain.`,
             highLow: `High temperature: ${body.daily.data[0].temperatureHigh}, Low temperature: ${body.daily.data[0].temperatureLow}`,
             location: req.location
         });
@@ -43,4 +39,4 @@ exports.getForecast = async (req, res, next) => {
             error: 'Unable to fetch forecast data. Please try again.'
         });
     }
-}
+};
